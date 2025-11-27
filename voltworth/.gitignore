@@ -1,0 +1,12 @@
+# Python
+*.pyc
+__pycache__/
+#*.pkl
+
+# Django
+db.sqlite3
+/staticfiles/
+
+# Environment
+.venv/
+.env

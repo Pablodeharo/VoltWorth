@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dashboard EV Market{% endblock %}
+
+{% block content %}
+<div class="card p-4">
+    <h3 class="header">📊 EV Market Intelligence</h3>
+
+    <div id="chart_prices" style="height:400px;"></div>
+    <div id="chart_battery" style="height:400px;"></div>
+    <div id="chart_range" style="height:400px;"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+fetch("/api/market-data/")
+    .then(response => response.json())
+    .then(data => {
+
+        Plotly.newPlot('chart_prices', [{
+            x: data.country,
+            y: data.price_avg,
+            type: 'bar'
+        }], {
+            title: "💶 Precio medio por país (€)"
+        });
+
+        Plotly.newPlot('chart_battery', [{
+            x: data.battery_capacity,
+            type: 'histogram'
+        }], {
+            title: "🔋 Distribución batería (kWh)"
+        });
+
+        Plotly.newPlot('chart_range', [{
+            x: data.electric_range_km,
+            type: 'histogram'
+        }], {
+            title: "🚗 Distribución autonomía (km)"
+        });
+
+    });
+</script>
+{% endblock %}

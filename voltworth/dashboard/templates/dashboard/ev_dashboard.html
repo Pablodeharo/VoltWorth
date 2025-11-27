@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EV Dashboard — SOH & Degradación</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container my-4">
+    <h1 class="mb-4">EV Dashboard — SOH & Degradación</h1>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">SOH medio (median)</div>
+                <div class="card-body">
+                    <h4 class="card-title">{{ soh_avg|default:"N/A" }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">% estimado (combinado)</div>
+                <div class="card-body">
+                    <h4 class="card-title">{{ soh_avg|default:"N/A" }}</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">Modelo SOH Info</div>
+                <div class="card-body">
+                    <pre>{{ soh_model_info|default:"{}" }}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla resumen -->
+    <h3 class="mt-4">Resumen por Marca / Modelo (top)</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Rank</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Count</th>
+                    <th>SOH Théoretical (%)</th>
+                    <th>SOH ML (%)</th>
+                    <th>SOH Final (%)</th>
+                    <th>Deg. 1y (%)</th>
+                    <th>FastChg kW (med)</th>
+                    <th>Charge ratio (med)</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in soh_summary %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ row.brand }}</td>
+                    <td>{{ row.model }}</td>
+                    <td>{{ row.count }}</td>
+                    <td>{{ row.soh_theoretical_median|default:"N/A" }}</td>
+                    <td>{{ row.soh_ml_median|default:"N/A" }}</td>
+                    <td>{{ row.soh_final|default:"N/A" }}</td>
+                    <td>{{ row.degradation_year1_pct_median|default:"N/A" }}</td>
+                    <td>{{ row.avg_fast_charging_kw|default:"N/A" }}</td>
+                    <td>{{ row.avg_charge_ratio|default:"N/A" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="10">No hay datos disponibles.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Gráfico SOH -->
+    <h3 class="mt-5">SOH Final por Marca/Modelo</h3>
+    <canvas id="sohChart" height="100"></canvas>
+</div>
+
+<script>
+    // Preparar datos JS
+    const sohData = {{ soh_summary|safe }};
+    const labels = sohData.map(row => row.brand + " / " + row.model);
+    const sohValues = sohData.map(row => row.soh_final || 0);
+
+    const ctx = document.getElementById('sohChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'SOH Final (%)',
+                data: sohValues,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'SOH Final por Marca / Modelo'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

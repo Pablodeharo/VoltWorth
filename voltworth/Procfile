@@ -1,0 +1,2 @@
+web: gunicorn voltworth.asgi:application -k uvicorn.workers.UvicornWorker
+

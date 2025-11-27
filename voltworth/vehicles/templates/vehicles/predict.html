@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoltWorth - Valoración Inteligente de EVs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .hero-section {
+            background: var(--gradient);
+            color: white;
+            padding: 3rem 0;
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            color: var(--dark);
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin: 2rem 0 1rem 0;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .error-card {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-bolt me-2"></i>VoltWorth
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{% url 'dashboard_overview' %}">
+                    <i class="fas fa-chart-bar me-1"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="fas fa-car-battery me-2"></i>Valoración Inteligente de Vehículos Eléctricos
+            </h1>
+            <p class="lead">Obtén una valoración precisa basada en datos reales del mercado</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-car text-primary fa-2x mb-2"></i>
+                <h4 class="mb-1">4,064+</h4>
+                <small class="text-muted">Vehículos analizados</small>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-euro-sign text-success fa-2x mb-2"></i>
+                <h4 class="mb-1">Preciso</h4>
+                <small class="text-muted">Modelo ML avanzado</small>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-globe-europe text-info fa-2x mb-2"></i>
+                <h4 class="mb-1">8 Países</h4>
+                <small class="text-muted">Mercado europeo</small>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-bolt text-warning fa-2x mb-2"></i>
+                <h4 class="mb-1">100% EV</h4>
+                <small class="text-muted">Solo eléctricos</small>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="form-container">
+            <form method="post" id="predictionForm">
+                {% csrf_token %}
+                
+                <!-- Información Básica -->
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle me-2"></i>Información Básica
+                </h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Marca del vehículo</label>
+                        <select name="brand" class="form-select" required>
+                            <option value="">Seleccionar marca...</option>
+                            {% for brand in valid_categories.brand %}
+                            <option value="{{ brand }}" {% if input_data.brand == brand %}selected{% endif %}>
+                                {{ brand }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Modelo</label>
+                        <input type="text" name="model" class="form-control" value="{{ input_data.model }}" 
+                               placeholder="Ej: Model 3, e-tron, ID.3..." required>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">País de registro</label>
+                        <select name="country" class="form-select" required>
+                            <option value="">Seleccionar país...</option>
+                            {% for country in valid_categories.country %}
+                            <option value="{{ country }}" {% if input_data.country == country %}selected{% endif %}>
+                                {{ country }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Tipo de carrocería</label>
+                        <select name="car_body_type" class="form-select" required>
+                            <option value="">Seleccionar tipo...</option>
+                            {% for body_type in valid_categories.car_body_type %}
+                            <option value="{{ body_type }}" {% if input_data.car_body_type == body_type %}selected{% endif %}>
+                                {{ body_type }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Especificaciones Técnicas -->
+                <h3 class="section-title mt-4">
+                    <i class="fas fa-cogs me-2"></i>Especificaciones Técnicas
+                </h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-tachometer-alt me-1"></i>Kilometraje (km)
+                        </label>
+                        <input type="number" name="mileage_in_km" class="form-control" 
+                               value="{{ input_data.mileage_in_km }}" min="0" required>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-horse me-1"></i>Potencia (kW)
+                        </label>
+                        <input type="number" step="0.1" name="power_kw" class="form-control" 
+                               value="{{ input_data.power_kw }}" min="0" required>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-road me-1"></i>Autonomía (km)
+                        </label>
+                        <input type="number" name="range_km" class="form-control" 
+                               value="{{ input_data.range_km }}" min="0" required>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-battery-full me-1"></i>Capacidad de batería (kWh)
+                        </label>
+                        <input type="number" step="0.1" name="battery_capacity_kWh" class="form-control" 
+                               value="{{ input_data.battery_capacity_kWh }}" min="0" required>
+                    </div>
+                </div>
+
+                <!-- Características Adicionales -->
+                <h3 class="section-title mt-4">
+                    <i class="fas fa-sliders-h me-2"></i>Características Adicionales
+                    <small class="text-muted fs-6">(Opcional)</small>
+                </h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Aceleración 0-100 km/h (s)</label>
+                        <input type="number" step="0.1" name="acceleration_0_100_s" class="form-control" 
+                               value="{{ input_data.acceleration_0_100_s }}" placeholder="7.0">
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Velocidad máxima (km/h)</label>
+                        <input type="number" name="top_speed_kmh" class="form-control" 
+                               value="{{ input_data.top_speed_kmh }}" placeholder="160">
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Antigüedad (años)</label>
+                        <input type="number" name="age" class="form-control" 
+                               value="{{ input_data.age }}" placeholder="3">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Número de asientos</label>
+                        <input type="number" name="seats" class="form-control" 
+                               value="{{ input_data.seats }}" placeholder="5">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label class="form-label">Tracción</label>
+                        <select name="drivetrain" class="form-select">
+                            <option value="">Seleccionar tracción...</option>
+                            {% for drive in valid_categories.drivetrain %}
+                            <option value="{{ drive }}" {% if input_data.drivetrain == drive %}selected{% endif %}>
+                                {{ drive }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-calculator me-2"></i>Calcular Valoración
+                    </button>
+                </div>
+            </form>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Calculando...</span>
+                </div>
+                <p class="mt-2 text-muted">Analizando datos y calculando valoración...</p>
+            </div>
+        </div>
+
+        <!-- Results -->
+        {% if prediction %}
+        <div class="result-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-2"><i class="fas fa-check-circle me-2"></i>Valoración Calculada</h2>
+                    <p class="mb-0">Precio estimado de mercado para tu vehículo eléctrico</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="display-4 fw-bold">{{ prediction }} €</div>
+                    <small>Valoración precisa basada en datos reales</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-card">
+            <h3><i class="fas fa-exclamation-triangle me-2"></i>Error en el cálculo</h3>
+            <p class="mb-0">{{ error }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 VoltWorth. Valoración inteligente de vehículos eléctricos.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Loading animation
+        document.getElementById('predictionForm').addEventListener('submit', function() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        });
+        
+        // Dynamic placeholders based on brand selection
+        document.querySelector('select[name="brand"]').addEventListener('change', function(e) {
+            const modelInput = document.querySelector('input[name="model"]');
+            const brand = e.target.value;
+            
+            const modelSuggestions = {
+                'Tesla': 'Model 3, Model Y, Model S...',
+                'BMW': 'i4, iX3, i3...',
+                'Audi': 'e-tron, Q4 e-tron...',
+                'Volkswagen': 'ID.3, ID.4, ID. Buzz...'
+            };
+            
+            modelInput.placeholder = modelSuggestions[brand] || 'Ej: Model 3, e-tron, ID.3...';
+        });
+    </script>
+</body>
+</html>

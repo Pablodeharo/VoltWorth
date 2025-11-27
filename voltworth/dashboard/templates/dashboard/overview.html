@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoltWorth - Market Intelligence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --ev-color: #10b981;
+            --hybrid-color: #8b5cf6;
+            --combustion-color: #6b7280;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s ease;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .kpi-card.ev {
+            border-left-color: var(--ev-color);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .country-selector {
+            max-width: 300px;
+        }
+        
+        .comparison-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            color: white;
+        }
+        
+        .badge-ev { background: var(--ev-color); }
+        .badge-hybrid { background: var(--hybrid-color); }
+        .badge-combustion { background: var(--combustion-color); }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="display-5 fw-bold">
+                        <i class="fas fa-chart-line me-2"></i>VoltWorth Analytics
+                    </h1>
+                    <p class="lead mb-0">Inteligencia de mercado para vehículos eléctricos</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <select class="form-select country-selector" onchange="window.location.href='?country=' + this.value">
+                        {% for c in allowed_countries %}
+                            <option value="{{ c }}" {% if c == country.lower %}selected{% endif %}>
+                                {{ c|title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- KPI Grid -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-car text-primary fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="mb-0">{{ total_vehicles }}</h3>
+                            <small class="text-muted">Total Vehículos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-euro-sign text-success fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="mb-0">{{ avg_price }} €</h3>
+                            <small class="text-muted">Precio Medio</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card ev">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-bolt text-success fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="mb-0">{{ ev_count }}</h3>
+                            <small class="text-muted">Vehículos Eléctricos</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-flag text-info fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h3 class="mb-0">{{ country }}</h3>
+                            <small class="text-muted">Mercado Analizado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="chart-container">
+                    {{ fig_fuel|safe }}
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="chart-container">
+                    {{ fig_trend|safe }}
+                </div>
+            </div>
+            
+            <div class="col-12">
+                <div class="chart-container">
+                    {{ fig_heatmap|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparativa EV vs Combustión -->
+        {% if comparison_data %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="chart-container">
+                    <h4 class="mb-4">
+                        <i class="fas fa-balance-scale me-2"></i>Comparativa por Tipo de Vehículo
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Medio</th>
+                                    <th>Potencia Media</th>
+                                    <th>Año Medio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in comparison_data %}
+                                <tr>
+                                    <td>
+                                        <span class="comparison-badge 
+                                            {% if item.vehicle_type == 'Eléctrico' %}badge-ev
+                                            {% elif item.vehicle_type == 'Híbrido' %}badge-hybrid
+                                            {% else %}badge-combustion{% endif %}">
+                                            {{ item.vehicle_type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ item.count }}</td>
+                                    <td>{{ item.avg_price }} €</td>
+                                    <td>{{ item.avg_power }} kW</td>
+                                    <td>{{ item.avg_year }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{% url 'dashboard_ev' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-bolt me-2"></i>Análisis Específico EV
+                    </a>
+                    <a href="{% url 'predict_vehicle' %}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-calculator me-2"></i>Valorador de Precios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
