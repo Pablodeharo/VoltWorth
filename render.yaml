@@ -1,3 +1,4 @@
+
 databases:
   - name: voltworthdb
     plan: free
@@ -10,7 +11,7 @@ services:
     name: voltworth
     runtime: python
     buildCommand: './build.sh'
-    startCommand: 'gunicorn voltworth_config.asgi:application -k uvicorn.workers.UvicornWorker'
+    startCommand: 'gunicorn voltworth.voltworth_config.wsgi:application' 
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -20,3 +21,7 @@ services:
         generateValue: true
       - key: WEB_CONCURRENCY
         value: 4
+      - key: RENDER
+        value: true 
+      - key: DEBUG
+        value: false
