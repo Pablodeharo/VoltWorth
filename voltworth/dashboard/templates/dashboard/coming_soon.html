@@ -1,0 +1,184 @@
+<!-- dashboard/templates/dashboard/coming_soon.html -->
+{% extends "base.html" %}
+{% block title %}VoltWorth Dashboard - Coming Soon{% endblock %}
+
+{% block extra_css %}
+<style>
+    .coming-soon-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 60px 40px;
+        margin-top: 30px;
+        color: white;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .icon-container {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+    }
+    
+    .features-grid {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 30px;
+        margin-top: 40px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="coming-soon-container">
+    <!-- Header -->
+    <div class="icon-container">
+        <i class="fas fa-rocket fa-3x"></i>
+    </div>
+    
+    <h1 class="display-4 fw-bold mb-3">🚀 Próximamente</h1>
+    
+    <p class="lead mb-4" style="font-size: 1.25rem; opacity: 0.9;">
+        Nuestros dashboards de análisis avanzado están en desarrollo.<br>
+        <strong>VoltWorth Analytics</strong> llegará pronto con datos en tiempo real.
+    </p>
+    
+    <!-- Countdown Timer (opcional) -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="alert alert-light" style="background: rgba(255, 255, 255, 0.9);">
+                <h5 class="text-dark mb-2"><i class="fas fa-calendar-alt me-2"></i>Lanzamiento estimado</h5>
+                <p class="text-dark mb-0">Q1 2024 - Preparando datos y visualizaciones</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Features Grid -->
+    <div class="features-grid">
+        <h3 class="mb-4"><i class="fas fa-star me-2"></i>¿Qué incluirán los dashboards?</h3>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon text-primary">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h5>Market Overview</h5>
+                    <p class="text-muted">Análisis de madurez del mercado EV/Hybrid por país, market share y evolución temporal.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon text-success">
+                        <i class="fas fa-car-battery"></i>
+                    </div>
+                    <h5>EV Deep Dive</h5>
+                    <p class="text-muted">Análisis técnico: depreciación, autonomía, eficiencia y valor por potencia.</p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon text-warning">
+                        <i class="fas fa-business-time"></i>
+                    </div>
+                    <h5>Fleet Intelligence</h5>
+                    <p class="text-muted">Recomendaciones para flotas basadas en valor residual y degradación de batería.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to Action -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <h4 class="text-dark mb-3"><i class="fas fa-bolt me-2 text-primary"></i>Prueba nuestra demo actual</h4>
+                    <p class="text-muted mb-4">
+                        Mientras desarrollamos los dashboards, puedes usar nuestro <strong>sistema de valuación de EVs</strong> 
+                        con modelos de Machine Learning en producción.
+                    </p>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-center">
+                        <a href="/demo/" class="btn btn-primary btn-lg px-5">
+                            <i class="fas fa-play-circle me-2"></i>Ir a la Demo
+                        </a>
+                        <a href="/api/model-info/" class="btn btn-outline-primary btn-lg px-5">
+                            <i class="fas fa-info-circle me-2"></i>API Info
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact/Notification -->
+    <div class="mt-5">
+        <p class="mb-2" style="opacity: 0.8;">
+            <i class="fas fa-envelope me-2"></i>¿Quieres ser notificado del lanzamiento?
+        </p>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="email" class="form-control" placeholder="tu@email.com" aria-label="Email">
+                    <button class="btn btn-light" type="button">
+                        <i class="fas fa-paper-plane"></i> Notificarme
+                    </button>
+                </div>
+                <small class="text-white-50 mt-2 d-block">
+                    Solo te contactaremos para anunciar el lanzamiento. Sin spam.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Optional: Simple countdown script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple notification form handler
+    document.querySelector('.btn-light').addEventListener('click', function() {
+        const email = document.querySelector('input[type="email"]').value;
+        if (email && email.includes('@')) {
+            alert('¡Gracias! Te notificaremos cuando los dashboards estén listos.');
+            document.querySelector('input[type="email"]').value = '';
+        } else {
+            alert('Por favor, ingresa un email válido.');
+        }
+    });
+    
+    // Enter key support
+    document.querySelector('input[type="email"]').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.querySelector('.btn-light').click();
+        }
+    });
+});
+</script>
+{% endblock %}

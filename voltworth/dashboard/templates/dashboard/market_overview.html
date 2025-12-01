@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}Market Overview - VoltWorth Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .country-selector {
+        background: white;
+        border-radius: 10px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .kpi-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+    .tech-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .ev-badge { background: #10b98120; color: #10b981; }
+    .phev-badge { background: #3b82f620; color: #3b82f6; }
+    .hybrid-badge { background: #f59e0b20; color: #f59e0b; }
+    .combustion-badge { background: #6b728020; color: #6b7280; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header with Country Selector -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="display-6 fw-bold text-dark">
+                <i class="fas fa-chart-pie me-2"></i>Market Overview
+            </h1>
+            <p class="text-muted">Análisis de madurez del mercado EV/Hybrid en {{ country_name }}</p>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-end align-items-center">
+                <form method="GET" class="country-selector">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-globe-europe"></i></span>
+                        <select name="country" class="form-select" onchange="this.form.submit()">
+                            {% for code, name in countries.items %}
+                            <option value="{{ code }}" {% if code == country %}selected{% endif %}>
+                                {{ name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <h6 class="text-muted">Total Vehicles</h6>
+                <h2 class="kpi-number">{{ total_vehicles|floatformat:0 }}</h2>
+                <small>Available in market</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <h6 class="text-muted">Average Price</h6>
+                <h2 class="kpi-number">€{{ avg_price }}</h2>
+                <small>Market average</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <h6 class="text-muted">EV/Hybrid Share</h6>
+                <h2 class="kpi-number">{{ ev_hybrid_percentage }}%</h2>
+                <small>{{ ev_hybrid_count|floatformat:0 }} vehicles</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kpi-card">
+                <h6 class="text-muted">Avg Year</h6>
+                <h2 class="kpi-number">{{ avg_year|floatformat:1 }}</h2>
+                <small>Vehicle age</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Share & Evolution -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3">🚗 Market Share by Technology</h5>
+                {{ fig_market_share|safe }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3">📈 Market Evolution (2015-2024)</h5>
+                {{ fig_evolution|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Distribution -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3">💰 Price Distribution by Technology</h5>
+                {{ fig_price_dist|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Technology Breakdown & Top Brands -->
+    <div class="row">
+        <div class="col-md-5">
+            <div class="chart-container h-100">
+                <h5 class="fw-bold mb-3">📊 Technology Breakdown</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Technology</th>
+                                <th class="text-end">Count</th>
+                                <th class="text-end">Share</th>
+                                <th class="text-end">Avg Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in category_summary %}
+                            <tr>
+                                <td>
+                                    <span class="tech-badge 
+                                        {% if item.category == 'Pure Electric' %}ev-badge
+                                        {% elif item.category == 'PHEV' %}phev-badge
+                                        {% elif item.category == 'Hybrid' %}hybrid-badge
+                                        {% else %}combustion-badge{% endif %}">
+                                        {{ item.category }}
+                                    </span>
+                                </td>
+                                <td class="text-end">{{ item.count|floatformat:0 }}</td>
+                                <td class="text-end">{{ item.percentage|floatformat:1 }}%</td>
+                                <td class="text-end">€{{ item.avg_price|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="chart-container h-100">
+                <h5 class="fw-bold mb-3">⚡ Top EV/Hybrid Brands</h5>
+                {{ fig_top_brands|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'ev_deep_dive' %}?country={{ country }}" class="btn btn-outline-success">
+                    <i class="fas fa-arrow-right me-2"></i>Next: EV Deep Dive
+                </a>
+                <a href="{% url 'dashboard_home' %}" class="btn btn-outline-primary"></a>
+                    <i class="fas fa-home me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

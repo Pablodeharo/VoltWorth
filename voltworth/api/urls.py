@@ -1,5 +1,6 @@
 from django.urls import path
-from . import views_v2
+#from . import views_v2
+from voltworth.api import views_v2
 
 urlpatterns = [
     # Endpoint de predicción

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Fleet Intelligence - VoltWorth Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .recommendation-card {
+        border-left: 5px solid #10b981;
+        transition: all 0.3s ease;
+    }
+    .recommendation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .retention-badge {
+        background: linear-gradient(135deg, #10b981, #3b82f6);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .spec-icon {
+        color: #10b981;
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 fw-bold text-dark">
+                <i class="fas fa-business-time me-2"></i>Fleet Intelligence
+            </h1>
+            <p class="text-muted">Recomendaciones para flotas basadas en valor residual y degradación</p>
+        </div>
+    </div>
+
+    <!-- Intro -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Análisis multi-país:</strong> Este dashboard analiza datos combinados de Alemania, Francia y España 
+                para identificar los vehículos con mejor retención de valor para flotas de renting/leasing.
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row">
+        <div class="col-md-6">
+            {% if fig_degradation %}
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3">🔋 Best Battery Retention Models</h5>
+                {{ fig_degradation|safe }}
+                <p class="text-muted mt-2 small">
+                    <i class="fas fa-lightbulb"></i> Menor tasa de degradación anual = mayor vida útil de batería
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-6">
+            {% if fig_residual %}
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3">💰 Projected Value Retention @ 3 Years</h5>
+                {{ fig_residual|safe }}
+                <p class="text-muted mt-2 small">
+                    <i class="fas fa-lightbulb"></i> Mayor porcentaje = mejor inversión para flota
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Top Recommendations -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5 class="fw-bold mb-4">
+                    <i class="fas fa-medal me-2"></i>Top Fleet Recommendations
+                </h5>
+                {% if recommendations %}
+                <div class="row">
+                    {% for rec in recommendations %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card recommendation-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ rec.brand }} {{ rec.model }}</h5>
+                                <div class="mb-3">
+                                    <span class="retention-badge">
+                                        {{ rec.degradation_rate_annual|floatformat:1 }}% degradación/año
+                                    </span>
+                                </div>
+                                <div class="specs">
+                                    <p class="mb-1">
+                                        <i class="fas fa-road spec-icon"></i>
+                                        <strong>Range:</strong> {{ rec.range_km|floatformat:0 }} km
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-battery-full spec-icon"></i>
+                                        <strong>Battery:</strong> {{ rec.battery_capacity_kwh|floatformat:0 }} kWh
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-bolt spec-icon"></i>
+                                        <strong>Efficiency:</strong> {{ rec.efficiency_wh_per_km|floatformat:0 }} Wh/km
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-euro-sign spec-icon"></i>
+                                        <strong>Avg Price:</strong> €{{ rec.avg_market_price|floatformat:0 }}
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="fas fa-car spec-icon"></i>
+                                        <strong>Availability:</strong> {{ rec.market_availability }} vehicles
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    No hay datos de recomendaciones disponibles en este momento.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Retention Models -->
+    <div class="row">
+        <div class="col-12">
+            <div class="chart-container">
+                <h5 class="fw-bold mb-3">
+                    <i class="fas fa-chart-line me-2"></i>Best Value Retention Across Markets
+                </h5>
+                {% if best_retention %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Brand & Model</th>
+                                <th class="text-end">Avg Price (€)</th>
+                                <th class="text-end">Avg Year</th>
+                                <th class="text-end">Sample Size</th>
+                                <th class="text-end">Countries</th>
+                                <th class="text-end">Price Volatility</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in best_retention %}
+                            <tr>
+                                <td class="fw-bold">#{{ forloop.counter }}</td>
+                                <td>
+                                    <strong>{{ item.brand }}</strong><br>
+                                    <small class="text-muted">{{ item.model }}</small>
+                                </td>
+                                <td class="text-end">€{{ item.avg_price|floatformat:0 }}</td>
+                                <td class="text-end">{{ item.avg_year|floatformat:1 }}</td>
+                                <td class="text-end">{{ item.sample_size }}</td>
+                                <td class="text-end">{{ item.countries_present }}</td>
+                                <td class="text-end">
+                                    <span class="badge {% if item.price_volatility < 5000 %}bg-success{% else %}bg-warning{% endif %}">
+                                        €{{ item.price_volatility|floatformat:0 }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Cargando datos de retención de valor...
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights & Navigation -->
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="alert alert-success">
+                <h6><i class="fas fa-lightbulb me-2"></i>Key Insights for Fleet Managers:</h6>
+                <ul class="mb-0">
+                    <li>Los EV con baja degradación de batería mantienen mejor valor residual</li>
+                    <li>La volatilidad de precios indica estabilidad del mercado</li>
+                    <li>Los modelos disponibles en múltiples países tienen mejor liquidez</li>
+                    <li>Considerar autonomía vs. precio para optimizar TCO (Total Cost of Ownership)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-grid gap-2">
+                <a href="{% url 'ev_deep_dive' %}" class="btn btn-outline-success">
+                    <i class="fas fa-arrow-left me-2"></i>Back: EV Deep Dive
+                </a>
+                <a href="/dashboard/" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>Dashboard Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

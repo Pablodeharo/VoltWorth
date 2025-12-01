@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # ⬅️ Debe apuntar al dire
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', ".onrender.com"]
 
@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'vehicles',
-    'api',
-    'dashboard',
+    'voltworth.vehicles',
+    'voltworth.api',
+    'voltworth.dashboard',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'voltworth.urls'
+ROOT_URLCONF = 'voltworth.voltworth_config.urls'
 
 TEMPLATES = [
     {
@@ -75,7 +75,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'voltworth.wsgi.application'
+WSGI_APPLICATION = 'voltworth.voltworth_config.wsgi.application'
 
 
 # Database

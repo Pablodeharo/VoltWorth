@@ -1,9 +1,6 @@
-from django.contrib import admin
-from django.urls import path, include
-
 from django.urls import path
-from . import views
+from voltworth.vehicles import views as vehicles_views
 
 urlpatterns = [
-    path("predict/", views.predict_vehicle, name="predict_vehicle"),
+    path("predict/", vehicles_views.predict_vehicle, name="predict_vehicle"),
 ]
