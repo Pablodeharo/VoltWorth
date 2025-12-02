@@ -130,7 +130,7 @@ python manage.py runserver
 
 ### 🧪 Model Details
 
-**Training Pipeline** (see `/pipeline` in ML repo):(https://github.com/Pablodeharo/Voltworth-model.git)
+**Training Pipeline** (see `/pipeline` in ML repo):(https://github.com/Pablodeharo/Voltworth-core/tree/main)
 1. **Data Loading**: 15,000+ EV listings from Europe (sintetic)
 2. **Feature Engineering**: Creates 9 derived features (usage intensity, efficiency ratios, depreciation categories)
 3. **Model Training**: Compares Random Forest, XGBoost, Ridge with GridSearchCV
@@ -305,7 +305,7 @@ python manage.py runserver
 
 ### 🧪 Detalles del Modelo
 
-**Pipeline de Entrenamiento**ML-Repo(:https://github.com/Pablodeharo/Voltworth-model.git)
+**Pipeline de Entrenamiento**ML-Repo(https://github.com/Pablodeharo/Voltworth-core/tree/main)
 1. **Carga de Datos**: 15,000+ anuncios de VE de mercados europeos
 2. **Feature Engineering**: Crea 9 features derivadas (intensidad de uso, ratios de eficiencia, categorías de depreciación)
 3. **Entrenamiento**: Compara Random Forest, XGBoost, Ridge con GridSearchCV
